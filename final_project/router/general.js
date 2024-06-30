@@ -20,8 +20,10 @@ public_users.get('/',function (req, res) {
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here
+  const arrayOfbooks = Object.keys(books).map(isbn => books[isbn]);
   const isbn = req.params.isbn;
-    res.send(books[isbn]);
+  let filter_isbn = arrayOfbooks.filter((book) => book.isbn === isbn);
+   res.send(filter_isbn);
   return res.status(300).json({message: "Yet to be implemented"});
  });
   
@@ -38,12 +40,20 @@ public_users.get('/author/:author',function (req, res) {
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
   //Write your code here
+  const arrayOfbooks = Object.keys(books).map(title => books[title]);
+  const title = req.params.title;
+  let filter_title = arrayOfbooks.filter((book) => book.title === title);
+   res.send(filter_title);
   return res.status(300).json({message: "Yet to be implemented"});
 });
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
   //Write your code here
+  const arrayOfbooks = Object.keys(books).map(review => books[review]);
+  const review = req.params.review;
+  let filter_review = arrayOfbooks.filter((book) => book.review === review);
+   res.send(filter_review);
   return res.status(300).json({message: "Yet to be implemented"});
 });
 

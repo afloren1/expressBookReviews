@@ -50,6 +50,25 @@ regd_users.post("/login", (req,res) => {
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
+  const arrayOfbooks = Object.keys(books).map(isbn => books[isbn]);
+    const isbn = req.params.isbn;
+    let filter_isbn = arrayOfbooks.filter((books) => books.isbn === isbn);
+    
+    if (filter_isbn.length > 0) {
+        // Select the first matching book and update reviews if provided
+        let filter_isbn = filter_isbn[0];
+        
+        
+        // Replace old review entry with updated review
+        isbn = arrayOfbooks.filter((books) => books.isbn != isbn);
+        users.push(filter_isbn);
+        
+        // Send success message indicating the review has been added
+        res.send(`User ` + req.body.username + ` added review.`);
+    } else {
+        // Send error message if no book found
+        res.send("Unable to find book!");
+    }
   return res.status(300).json({message: "Yet to be implemented"});
 });
 

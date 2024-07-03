@@ -14,12 +14,16 @@ const isValid = (username)=>{ //returns boolean
 }
 
 const authenticatedUser = (username,password)=>{ //returns boolean
-//write code to check if username and password match the one we have in records.
-let validusers = users.filter((user) => {
-    return (user.username === username && user.password === password);
-});
-return validusers.lenght > 0;
-};
+    //write code to check if username and password match the one we have in records.
+    let validusers = users.filter((user) => {
+        return (user.username === username && user.password === password);
+    });
+    if (validusers.length > 0) {
+        return true;
+    } else {
+        return false;
+    }
+    };
 
 //only registered users can login
 regd_users.post("/login", (req,res) => {
@@ -30,19 +34,21 @@ regd_users.post("/login", (req,res) => {
   if (!username || !password) {
       return res.status(404).json({ message: "Error logging in" });
   }
-
-    if (authenticatedUser(username, password)) {
-        let accessToken = jwt.sign({
-            data: password
-        }, 'access', { expiresIn: 60 * 60 });
-        req.session.username = {
-            accessToken, username
-        }
+  
+  if (authenticatedUser(username, password)) {
+    // Generate JWT access token
+    let accessToken = jwt.sign({
+        data: password
+    }, 'access', { expiresIn: 60 * 60 });
+    // Store access token and username in session
+    req.session.authorization = {
+        accessToken, username
+    }
         return res.status(200).send("User " + req.body.username + " successfully logged in");
     } else {
+        
         return res.status(208).json({ message: "Invalid Login. Check username and password" });
     };
-  return res.status(300).json({message: "Yet to be implemented"});
 });
 
 // Add a book review
@@ -52,15 +58,16 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   const review = req.query.review;
   const username = req.session.username; // Get the username from the session
   let foundBook = null;
-
-  // Find the book with the given ISBN
-  for (let key in books) {
-    if (books[key].isbn && books[key].isbn() === isbn) {
-      foundBook = books[key];
-      break;
-    }
+  if (!username) {
+    return res.status(401).send('You must be logged in to post a review');
   }
 
+  
+  for (let key in books) {
+    if (books[key].isbn === isbn) {
+      foundBook = books[key];
+    }
+  }
   if (foundBook) {
     // Initialize reviews if not already present
     if (!foundBook.reviews) {

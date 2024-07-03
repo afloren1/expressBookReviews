@@ -60,10 +60,24 @@ public_users.get('/title/:title',function (req, res) {
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
   //Write your code here
-  const arrayOfbooks = Object.keys(books).map(review => books[review]);
-  const review = req.params.review;
-  let filter_review = arrayOfbooks.filter((book) => book.review === review);
-   res.send(filter_review);
+  const isbn = req.params.isbn;
+  let foundBook = null;
+  console.log(`Requested ISBN: ${isbn}`); // Log the requested ISBN
+  // Loop through the books to find the one with the matching ISBN
+  for (let key in books) {
+    const bookIsbn = books[key].isbn;
+    console.log(`Checking book ISBN: ${bookIsbn}`); // Log each ISBN being checked
+    if (bookIsbn === isbn) {
+      foundBook = books[key];
+      break;
+    }
+  }
+  // If the book is found and it has reviews
+  if (foundBook && foundBook.reviews) {
+    res.send(foundBook.reviews);
+  } else {
+    res.status(404).send({ message: "No reviews found for this ISBN" });
+  }
   return res.status(300).json({message: "Yet to be implemented"});
 });
 

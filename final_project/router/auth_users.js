@@ -18,11 +18,7 @@ const authenticatedUser = (username,password)=>{ //returns boolean
 let validusers = users.filter((user) => {
     return (user.username === username && user.password === password);
 });
-if (validusers.length > 0) {
-    return true;
-} else {
-    return false;
-}
+return validusers.lenght > 0;
 };
 
 //only registered users can login
@@ -39,7 +35,7 @@ regd_users.post("/login", (req,res) => {
         let accessToken = jwt.sign({
             data: password
         }, 'access', { expiresIn: 60 * 60 });
-        req.session.authorization = {
+        req.session.username = {
             accessToken, username
         }
         return res.status(200).send("User " + req.body.username + " successfully logged in");
@@ -52,26 +48,32 @@ regd_users.post("/login", (req,res) => {
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
-  const arrayOfbooks = Object.keys(books).map(isbn => books[isbn]);
-    const isbn = req.params.isbn;
-    let filter_isbn = arrayOfbooks.filter((books) => books.isbn === isbn);
-    
-    if (filter_isbn.length > 0) {
-        // Select the first matching book and update reviews if provided
-        let filter_isbn = filter_isbn[0];
-        
-        
-        // Replace old review entry with updated review
-        isbn = arrayOfbooks.filter((books) => books.isbn != isbn);
-        books.push({ "review": review});
-        
-        // Send success message indicating the review has been added
-        res.send(`User ` + req.body.username + ` added review.`);
-    } else {
-        // Send error message if no book found
-        res.send("Unable to find book!");
+  const isbn = req.params.isbn; // Get the ISBN from the URL parameter
+  const review = req.query.review;
+  const username = req.session.username; // Get the username from the session
+  let foundBook = null;
+
+  // Find the book with the given ISBN
+  for (let key in books) {
+    if (books[key].isbn && books[key].isbn() === isbn) {
+      foundBook = books[key];
+      break;
     }
-  return res.status(300).json({message: "Yet to be implemented"});
+  }
+
+  if (foundBook) {
+    // Initialize reviews if not already present
+    if (!foundBook.reviews) {
+      foundBook.reviews = {};
+    }
+
+    // Add or update the review
+    foundBook.reviews[username] = review;
+
+    res.send(`User ${username} added/updated their review.`);
+  } else {
+    res.status(404).send("Unable to find book!");
+  }
 });
 
 module.exports.authenticated = regd_users;

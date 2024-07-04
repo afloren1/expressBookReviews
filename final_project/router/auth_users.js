@@ -3,52 +3,63 @@ const jwt = require('jsonwebtoken');
 let books = require("./booksdb.js");
 const regd_users = express.Router();
 
-let users = [];
+let users = [
+    {
+    "username": "user1",
+    "password": "pass1"
+}
+];
 
 const isValid = (username)=>{ //returns boolean
 //write code to check is the username is valid
-    let userswithsamename = users.filter((user) => {
-      return user.username === username;
-    });
-    return userswithsamename.length > 0;
+let userswithsamename = users.filter((user) => {
+    return user.username === username;
+});
+// Return true if any user with the same username is found, otherwise false
+if (userswithsamename.length > 0) {
+    return true;
+} else {
+    return false;
 }
+};
 
 const authenticatedUser = (username,password)=>{ //returns boolean
     //write code to check if username and password match the one we have in records.
     let validusers = users.filter((user) => {
         return (user.username === username && user.password === password);
     });
+    // Return true if any valid user is found, otherwise false
     if (validusers.length > 0) {
         return true;
     } else {
         return false;
     }
-    };
-
+}
 //only registered users can login
 regd_users.post("/login", (req,res) => {
   //Write your code here
   const username = req.body.username;
-  const password = req.body.password;
-  // Check if username or password is missing
-  if (!username || !password) {
-      return res.status(404).json({ message: "Error logging in" });
-  }
-  
-  if (authenticatedUser(username, password)) {
-    // Generate JWT access token
-    let accessToken = jwt.sign({
-        data: password
-    }, 'access', { expiresIn: 60 * 60 });
-    // Store access token and username in session
-    req.session.authorization = {
-        accessToken, username
+    const password = req.body.password;
+    // Check if username or password is missing
+    if (!username || !password) {
+        return res.status(404).json({ message: "Error logging in" });
     }
+    // Authenticate user
+    if (authenticatedUser(username, password)) {
+        // Generate JWT access token
+        let accessToken = jwt.sign({
+            data: username
+        }, 'access', { expiresIn: 60 * 60 });
+        // Store access token and username in session
+        req.session.authorization = {
+            accessToken, username
+        };
+        req.session.username = username;
+        console.log('Session after login:', req.session);
         return res.status(200).send("User " + req.body.username + " successfully logged in");
     } else {
-        
         return res.status(208).json({ message: "Invalid Login. Check username and password" });
-    };
+    }
 });
 
 // Add a book review
@@ -57,12 +68,12 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   const isbn = req.params.isbn; // Get the ISBN from the URL parameter
   const review = req.query.review;
   const username = req.session.username; // Get the username from the session
-  let foundBook = null;
+  console.log('Username in session:', username);
   if (!username) {
     return res.status(401).send('You must be logged in to post a review');
   }
 
-  
+  let foundBook = null;
   for (let key in books) {
     if (books[key].isbn === isbn) {
       foundBook = books[key];

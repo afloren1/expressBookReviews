@@ -54,7 +54,6 @@ regd_users.post("/login", (req,res) => {
         req.session.authorization = {
             accessToken, username
         };
-        req.session.username = username;
         console.log('Session after login:', req.session);
         return res.status(200).send("User " + req.body.username + " successfully logged in");
     } else {

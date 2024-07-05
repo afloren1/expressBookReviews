@@ -11,8 +11,8 @@ app.use(express.json());
 app.use("/customer",session({
     secret:"fingerprint_customer",
     resave: true, 
-    saveUninitialized: false,
-    cookie: { secure: false, maxAge: 3600000 }
+    saveUninitialized: true,
+    cookie: { secure: false, maxAge: 3600000, sameSite: 'lax' }
 }));
 
 app.use((req, res, next) => {

@@ -15,13 +15,8 @@ app.use("/customer",session({
     cookie: { secure: false, maxAge: 3600000, sameSite: 'lax' }
 }));
 
-app.use((req, res, next) => {
-    console.log('Session Data:', req.session);
-    next();
-});
 app.use("/customer/auth/*", function auth(req,res,next){
 //Write the authenication mechanism here
-console.log('Session Data:', req.session);
 if (req.session.authorization) {
     let token = req.session.authorization['accessToken'];
     // Verify JWT token

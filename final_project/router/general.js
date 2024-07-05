@@ -62,11 +62,9 @@ public_users.get('/review/:isbn',function (req, res) {
   //Write your code here
   const isbn = req.params.isbn;
   let foundBook = null;
-  console.log(`Requested ISBN: ${isbn}`); // Log the requested ISBN
   // Loop through the books to find the one with the matching ISBN
   for (let key in books) {
     const bookIsbn = books[key].isbn;
-    console.log(`Checking book ISBN: ${bookIsbn}`); // Log each ISBN being checked
     if (bookIsbn === isbn) {
       foundBook = books[key];
       break;

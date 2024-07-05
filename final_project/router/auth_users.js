@@ -52,9 +52,9 @@ regd_users.post("/login", (req,res) => {
         }, 'access', { expiresIn: 60 * 60 });
         // Store access token and username in session
         req.session.authorization = {
-            accessToken, username
+            accessToken
         };
-        console.log('Session after login:', req.session);
+        req.session.username = username;
         return res.status(200).send("User " + req.body.username + " successfully logged in");
     } else {
         return res.status(208).json({ message: "Invalid Login. Check username and password" });
@@ -67,7 +67,6 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   const isbn = req.params.isbn; // Get the ISBN from the URL parameter
   const review = req.query.review;
   const username = req.session.username; // Get the username from the session
-  console.log('Username in session:', username);
   if (!username) {
     return res.status(401).send('You must be logged in to post a review');
   }

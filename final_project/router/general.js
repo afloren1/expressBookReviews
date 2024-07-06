@@ -22,29 +22,68 @@ public_users.post("/register", (req,res) => {
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-  //Write your code here
-    res.send(JSON.stringify(books,null,3));
-  return res.status(300).json({message: "Yet to be implemented"});
-});
+    //Write your code here
+    let myPromise = new Promise((resolve,reject) => {
+      resolve(Object.entries(books))});
+  console.log("Before calling promise"); //Console log before calling the promise
+  
+  myPromise.then(() => {
+      console.log("Promise resolved")//Call the promise and wait for it to be resolved and then print a message.
+      return res.status(200).json(Object.entries(books))});
+    
+  myPromise.catch((error) => {
+      console.log("Promise Rejected"); //Console log after calling the promise
+    return res.status(500).json({message: "An error occurred", error: error});
+    });
+    
+    console.log("After calling promise"); //Console log after calling the promise
+  
+  });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
-  //Write your code here
-  const arrayOfbooks = Object.keys(books).map(isbn => books[isbn]);
-  const isbn = req.params.isbn;
-  let filter_isbn = arrayOfbooks.filter((book) => book.isbn === isbn);
-   res.send(filter_isbn);
-  return res.status(300).json({message: "Yet to be implemented"});
- });
+    const arrayOfbooks = Object.keys(books).map(isbn => books[isbn]);
+    const isbn = req.params.isbn;
+    let filter_isbn = arrayOfbooks.filter((book) => book.isbn === isbn);
+    let myPromise = new Promise((resolve,reject) => {
+       if (filter_isbn) {
+          resolve(filter_isbn);
+       } else {
+          reject(`Book with ISBN ${isbn} not found`);
+       }
+       });
+  console.log("Before calling promise"); //Console log before calling the promise
+  myPromise.then(() => {
+      console.log("Promise resolved")//Call the promise and wait for it to be resolved and then print a message.
+      return res.status(200).json(filter_isbn)});
+  myPromise.catch((error) => {
+      console.log("Promise Rejected"); //Console log after calling the promise
+    return res.status(500).json({message: "An error occurred", error: error});
+    });
+    console.log("After calling promise"); //Console log after calling the promise
+   });
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
-  //Write your code here
   const arrayOfbooks = Object.keys(books).map(author => books[author]);
   const author = req.params.author;
   let filter_author = arrayOfbooks.filter((book) => book.author === author);
-   res.send(filter_author);
-  return res.status(300).json({message: "Yet to be implemented"});
+  let myPromise = new Promise((resolve,reject) => {
+    if (filter_author) {
+       resolve(filter_author);
+    } else {
+       reject(`Book with author ${author} not found`);
+    }
+    });
+console.log("Before calling promise"); //Console log before calling the promise
+myPromise.then(() => {
+   console.log("Promise resolved")//Call the promise and wait for it to be resolved and then print a message.
+   return res.status(200).json(filter_author)});
+myPromise.catch((error) => {
+   console.log("Promise Rejected"); //Console log after calling the promise
+ return res.status(500).json({message: "An error occurred", error: error});
+ });
+ console.log("After calling promise"); //Console log after calling the promise
 });
 
 // Get all books based on title
@@ -53,8 +92,22 @@ public_users.get('/title/:title',function (req, res) {
   const arrayOfbooks = Object.keys(books).map(title => books[title]);
   const title = req.params.title;
   let filter_title = arrayOfbooks.filter((book) => book.title === title);
-   res.send(filter_title);
-  return res.status(300).json({message: "Yet to be implemented"});
+  let myPromise = new Promise((resolve,reject) => {
+    if (filter_title) {
+       resolve(filter_title);
+    } else {
+       reject(`Book with title ${title} not found`);
+    }
+    });
+console.log("Before calling promise"); //Console log before calling the promise
+myPromise.then(() => {
+   console.log("Promise resolved")//Call the promise and wait for it to be resolved and then print a message.
+   return res.status(200).json(filter_title)});
+myPromise.catch((error) => {
+   console.log("Promise Rejected"); //Console log after calling the promise
+ return res.status(500).json({message: "An error occurred", error: error});
+ });
+ console.log("After calling promise"); //Console log after calling the promise
 });
 
 //  Get book review

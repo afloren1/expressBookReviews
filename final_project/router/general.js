@@ -22,22 +22,24 @@ public_users.post("/register", (req,res) => {
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-    //Write your code here
-    let myPromise = new Promise((resolve,reject) => {
-      resolve(Object.entries(books))});
-  console.log("Before calling promise"); //Console log before calling the promise
-  
-  myPromise.then(() => {
-      console.log("Promise resolved")//Call the promise and wait for it to be resolved and then print a message.
-      return res.status(200).json(Object.entries(books))});
-    
-  myPromise.catch((error) => {
-      console.log("Promise Rejected"); //Console log after calling the promise
-    return res.status(500).json({message: "An error occurred", error: error});
-    });
-    
-    console.log("After calling promise"); //Console log after calling the promise
-  
+    // Using the async function with a callback
+    function fetchbooks (callback) {
+        setTimeout(() => {
+            const book = Object.entries(books);
+            if (book.lenght > 0) {
+                callback(null, book);
+            } else {
+                callback(new Error ('Book list not available'));
+        }
+        }, 2000);
+      }
+      fetchbooks ((err, book) => {
+        if (err) {
+            return res.status(500).send('Error fetching list of books');
+        }
+        res.json(book)
+        console.log(book)
+      })
   });
 
 // Get book details based on ISBN

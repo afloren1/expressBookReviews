@@ -25,7 +25,7 @@ public_users.get('/',function (req, res) {
     // Using the async function with a callback
     function fetchbooks () {
         res.send(Object.entries(books));
-        console.log(Object.entries(books));
+        console.log('Success');
     }
         setTimeout(fetchbooks, 3000);
         console.log('Obtaining list of books');

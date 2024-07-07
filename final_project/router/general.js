@@ -23,23 +23,12 @@ public_users.post("/register", (req,res) => {
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
     // Using the async function with a callback
-    function fetchbooks (callback) {
-        setTimeout(() => {
-            const book = Object.entries(books);
-            if (book.lenght > 0) {
-                callback(null, book);
-            } else {
-                callback(new Error ('Book list not available'));
-        }
-        }, 2000);
-      }
-      fetchbooks ((err, book) => {
-        if (err) {
-            return res.status(500).send('Error fetching list of books');
-        }
-        res.json(book)
-        console.log(book)
-      })
+    function fetchbooks () {
+        res.send(Object.entries(books));
+        console.log(Object.entries(books));
+    }
+        setTimeout(fetchbooks, 3000);
+        console.log('Obtaining list of books');
   });
 
 // Get book details based on ISBN
